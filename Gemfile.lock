@@ -1,5 +1,5 @@
 PATH
-  remote: ../xga-ruby
+  remote: vendor/gems/xga-ruby
   specs:
     xga-ruby (0.1.0)
       base58 (~> 0.2.3)
