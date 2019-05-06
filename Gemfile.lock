@@ -1,0 +1,58 @@
+PATH
+  remote: ../xga-ruby
+  specs:
+    xga-ruby (0.1.0)
+      base58 (~> 0.2.3)
+      bitcoin-ruby (~> 0.0.19)
+      faraday (~> 0.15.4)
+      faraday_middleware (~> 0.13.1)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    base58 (0.2.3)
+    bitcoin-ruby (0.0.19)
+      eventmachine
+      ffi
+      scrypt
+    coderay (1.1.2)
+    eventmachine (1.2.7)
+    faraday (0.15.4)
+      multipart-post (>= 1.2, < 3)
+    faraday_middleware (0.13.1)
+      faraday (>= 0.7.4, < 1.0)
+    ffi (1.10.0)
+    ffi-compiler (1.0.1)
+      ffi (>= 1.0.0)
+      rake
+    method_source (0.9.2)
+    multipart-post (2.0.0)
+    mustermann (1.0.3)
+    pry (0.12.2)
+      coderay (~> 1.1.0)
+      method_source (~> 0.9.0)
+    rack (2.0.7)
+    rack-protection (2.0.5)
+      rack
+    rake (12.3.2)
+    rb-readline (0.5.5)
+    scrypt (3.0.6)
+      ffi-compiler (>= 1.0, < 2.0)
+    sinatra (2.0.5)
+      mustermann (~> 1.0)
+      rack (~> 2.0)
+      rack-protection (= 2.0.5)
+      tilt (~> 2.0)
+    tilt (2.0.9)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  pry
+  rb-readline
+  sinatra
+  xga-ruby!
+
+BUNDLED WITH
+   2.0.1
