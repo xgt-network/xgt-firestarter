@@ -9,7 +9,7 @@ GIT
       faraday_middleware (~> 0.13.1)
 
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
     base58 (0.2.3)
     bitcoin-ruby (0.0.19)
