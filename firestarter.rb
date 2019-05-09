@@ -5,12 +5,11 @@ require 'xgt/ruby'
 
 class Firestarter
 
-  attr_accessor :wif, :address_prefix, :chain_id, :rpc
+  attr_accessor :wif, :chain_id, :rpc
 
   def initialize(config)
     @wif = config["private_key"]
     @wif = "5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n"
-    @address_prefix = config["address_prefix"]
     @chain_id = config["chain_id"]
     @rpc = Xgt::Ruby::Rpc.new(config["host"])
   end
@@ -77,7 +76,7 @@ class Firestarter
       'ref_block_prefix' => 883395518
     }
 
-    signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [wif], address_prefix, chain_id)
+    signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [wif], chain_id)
     rpc.call('call', ['condenser_api', 'broadcast_transaction_synchronous', [signed]])
   end
 end
