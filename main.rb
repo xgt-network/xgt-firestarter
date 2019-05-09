@@ -16,6 +16,7 @@ $config = YAML.load_file('config.yml')["development"]["xgt"]
 
 
 
+=begin
 set :environment, :production
 
 error do
@@ -27,6 +28,7 @@ not_found do
   status 404
   JSON.dump({:result => '404', :message => "does not exist"})
 end
+=end
 
 
 get '/account/:name' do
@@ -46,7 +48,7 @@ post '/account' do
   if res["error"]
     status 500
     message = res["error"]["message"]
-    JSON.dump({:result => '500', :message => message})
+    JSON.dump({:result => '500', :message => message, :full => res})
   else
     JSON.dump(res)
   end
