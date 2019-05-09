@@ -12,7 +12,7 @@ class Firestarter
     @wif = "5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n"
     @address_prefix = config["address_prefix"]
     @chain_id = config["chain_id"]
-    @rpc = Xga::Ruby::Rpc.new(config["host"])
+    @rpc = Xgt::Ruby::Rpc.new(config["host"])
   end
 
   def account_exist?(name)
@@ -77,7 +77,7 @@ class Firestarter
       'ref_block_prefix' => 883395518
     }
 
-    signed = Xga::Ruby::Auth.sign_transaction(rpc, txn, [wif], address_prefix, chain_id)
+    signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [wif], address_prefix, chain_id)
     rpc.call('call', ['condenser_api', 'broadcast_transaction_synchronous', [signed]])
   end
 end
