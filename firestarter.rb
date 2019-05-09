@@ -1,7 +1,7 @@
 
 require 'bundler/setup'
 require 'time'
-require 'xga/ruby'
+require 'xgt/ruby'
 
 class Firestarter
 

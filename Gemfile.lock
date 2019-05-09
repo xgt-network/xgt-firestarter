@@ -1,7 +1,8 @@
-PATH
-  remote: vendor/gems/xga-ruby
+GIT
+  remote: https://x-access-token:664a4176d09cb6526d48217c6445eb7f1d6b34a5@github.com/gather-com/xgt-ruby.git
+  revision: 8b0053a4cab0ecb5177a3ee59fd1da40ab4601d1
   specs:
-    xga-ruby (0.1.0)
+    xgt-ruby (0.1.0)
       base58 (~> 0.2.3)
       bitcoin-ruby (~> 0.0.19)
       faraday (~> 0.15.4)
@@ -24,7 +25,7 @@ GEM
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
-    multipart-post (2.0.0)
+    multipart-post (2.1.0)
     mustermann (1.0.3)
     rack (2.0.7)
     rack-protection (2.0.5)
@@ -46,7 +47,7 @@ PLATFORMS
 DEPENDENCIES
   rb-readline
   sinatra
-  xga-ruby!
+  xgt-ruby!
 
 BUNDLED WITH
    2.0.1
