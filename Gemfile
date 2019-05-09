@@ -1,9 +1,8 @@
 source 'https://rubygems.org'
 
+ruby '2.5.3'
+
 gem 'rb-readline'
 gem 'sinatra'
-# gem 'xga-ruby', path: '../xga-ruby'
-# gem 'xgt-ruby', git: "https://x-access-token:#{ENV['GITHUB_TOKEN']}@github.com/gather-com/xgt-ruby.git"
 gem 'xgt-ruby', git: "https://github.com/gather-com/xgt-ruby.git"
 
-# gem 'pry'
