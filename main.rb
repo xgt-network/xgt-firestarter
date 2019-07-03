@@ -8,6 +8,7 @@
 require 'bundler/setup'
 
 require 'sinatra'
+require 'sinatra/reloader' if development?
 require 'json'
 require 'yaml'
 require 'securerandom'
@@ -18,7 +19,7 @@ $config = YAML.load_file('config.yml')["development"]["xgt"]
 
 set :bind, '0.0.0.0'
 
-
+configure { set :server, :puma }
 
 =begin
 set :environment, :production
