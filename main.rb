@@ -10,9 +10,13 @@ require 'bundler/setup'
 require 'sinatra'
 require 'json'
 require 'yaml'
+require 'securerandom'
+require 'pp'
 require_relative 'firestarter'
 
 $config = YAML.load_file('config.yml')["development"]["xgt"]
+
+set :bind, '0.0.0.0'
 
 
 
@@ -42,9 +46,12 @@ get '/account/:name/exist' do
 end
  
 post '/account' do
-  name = params[:name]
+  # name = params[:name]
+  json_body = JSON.load(request.body.read)
+  keys = json_body["keys"]
+  name = "xgt" + SecureRandom.uuid
   @firestarter = Firestarter.new($config)
-  res = @firestarter.create_account(name)
+  res = @firestarter.create_account(name, keys)
   if res["error"]
     status 500
     message = res["error"]["message"]

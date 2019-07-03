@@ -23,7 +23,7 @@ class Firestarter
     res["result"]["accounts"]
   end
 
-  def create_account(name)
+  def create_account(name, keys)
     now = (Time.now + 360).utc.iso8601.gsub(/Z$/, '')
 
     txn = {
@@ -39,34 +39,19 @@ class Firestarter
             'owner' => {
               'weight_threshold' => 1,
               'account_auths' => [],
-              'key_auths' => [
-                [
-                  'TST7xue5ESY1xHhDZj6dw2igXCwoHobA3cnxffacvp4XMzwfzLZu4',
-                  1
-                ]
-              ]
+              'key_auths' => [ [ keys["owner"], 1 ] ],
             },
             'active' => {
               'weight_threshold' => 1,
               'account_auths' => [],
-              'key_auths' => [
-                [
-                  'TST6Yp3zeaYNU7XJF2MxoHhDcWT4vGgVkzTLEvhMY6g5tvmwzn3tN',
-                  1
-                ]
-              ]
+              'key_auths' => [ [ keys["active"], 1 ] ],
             },
             'posting' => {
               'weight_threshold' => 1,
               'account_auths' => [],
-              'key_auths' => [
-                [
-                  'TST5Q7ZdopjQWZMwiyZk11W5Yhvsfu1PG3f4qsQN58A7XfHP34Hig',
-                  1
-                ]
-              ]
+              'key_auths' => [ [ keys["posting"], 1 ] ],
             },
-            'memo_key' => 'TST5u69JnHZ3oznnwn71J6VA4r5oVJX6Xu3dpbFVoHpJoZXnbDfaW',
+            'memo_key' => keys["memo"],
             'json_metadata' => '',
             'extensions' => []
           }
@@ -77,6 +62,32 @@ class Firestarter
     }
 
     signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [wif], chain_id)
-    rpc.call('call', ['condenser_api', 'broadcast_transaction_synchronous', [signed]])
+    account_create_chain_response = rpc.call('call', ['condenser_api', 'broadcast_transaction_synchronous', [signed]])
+
+    amount = "5000"
+    vesting_shares = "#{'%.6f' % amount.to_i}"
+
+    txn = {
+      'extensions' => [],
+      'operations' => [[
+        'delegate_vesting_shares',
+      {
+        'delegator' => "initminer",
+        'delegatee' => name,
+        'vesting_shares' => "#{vesting_shares} VESTS"
+      }
+      ]]
+    }
+    signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [wif], chain_id)
+    account_create_chain_response = rpc.call('call', ['condenser_api', 'broadcast_transaction_synchronous', [signed]])
+
+    
+
+
+
+    { 
+      name: name,
+      result: account_create_chain_response
+    }
   end
 end
