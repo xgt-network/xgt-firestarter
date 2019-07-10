@@ -50,7 +50,8 @@ post '/account' do
   # name = params[:name]
   json_body = JSON.load(request.body.read)
   keys = json_body["keys"]
-  name = "xgt" + SecureRandom.uuid
+  # name = "xgt" + SecureRandom.uuid
+  name = "xgt" + SecureRandom.uuid.gsub('-', '').to_i(16).to_s(36)
   @firestarter = Firestarter.new($config)
   res = @firestarter.create_account(name, keys)
   if res["error"]
