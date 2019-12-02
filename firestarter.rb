@@ -7,23 +7,22 @@ class Firestarter
 
   attr_accessor :wif, :chain_id, :rpc
 
-  def initialize(config)
-    @wif = config["private_key"]
-    @wif = "5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n"
-    @chain_id = config["chain_id"]
-    @rpc = Xgt::Ruby::Rpc.new(config["host"])
+  def initialize()
+    @rpc = Xgt::Ruby::Rpc.new(ENV["HOST"])
   end
 
-  def account_exist?(name)
-    account(name).any?
+  def account_exist?(address)
+    account(address).any?
   end
 
-  def account(name)
-    res = rpc.call('database_api.find_accounts', { 'accounts' => [name] })
-    res["result"]["accounts"]
+  def account(address)
+    res = rpc.call('database_api.find_accounts', { 'accounts' => [address] })
+    res["accounts"]
   end
 
-  def create_account(name, keys)
+  def create_account(keys)
+
+    # Create account
     now = (Time.now + 360).utc.iso8601.gsub(/Z$/, '')
 
     txn = {
@@ -35,7 +34,6 @@ class Firestarter
           {
             'fee' => '0.000 TESTS',
             'creator' => 'initminer',
-            'new_account_name' => name,
             'owner' => {
               'weight_threshold' => 1,
               'account_auths' => [],
@@ -61,9 +59,16 @@ class Firestarter
       'ref_block_prefix' => 883395518
     }
 
-    signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [wif], chain_id)
+    signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [ENV["WIF"]], ENV["CHAIN_ID"])
     account_create_chain_response = rpc.call('call', ['condenser_api', 'broadcast_transaction_synchronous', [signed]])
 
+
+    # Get wallet address we just created
+    transaction_data = rpc.call('condenser_api.get_transaction', [account_create_chain_response['id']])
+    account_names = rpc.call('condenser_api.get_account_names_by_block_num', [transaction_data['block_num']])
+    account_name = account_names.first
+
+    # [OPTIONAL] Set up a delegation for the new account
     amount = "5000"
     vesting_shares = "#{'%.6f' % amount.to_i}"
 
@@ -73,20 +78,17 @@ class Firestarter
         'delegate_vesting_shares',
       {
         'delegator' => "initminer",
-        'delegatee' => name,
+        'delegatee' => account_name,
         'vesting_shares' => "#{vesting_shares} VESTS"
       }
       ]]
     }
-    signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [wif], chain_id)
+    signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [ENV["WIF"]], ENV["CHAIN_ID"])
     account_create_chain_response = rpc.call('call', ['condenser_api', 'broadcast_transaction_synchronous', [signed]])
 
-    
-
-
-
+    # Return the response
     { 
-      name: name,
+      name: account_name,
       result: account_create_chain_response
     }
   end

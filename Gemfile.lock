@@ -1,6 +1,7 @@
 GIT
   remote: https://github.com/gather-com/xgt-ruby.git
-  revision: 8b0053a4cab0ecb5177a3ee59fd1da40ab4601d1
+  revision: 6c7d5ee757927dc50110af55c351ba51737fb442
+  branch: wallet
   specs:
     xgt-ruby (0.1.0)
       base58 (~> 0.2.3)
@@ -22,12 +23,12 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.13.1)
       faraday (>= 0.7.4, < 1.0)
-    ffi (1.10.0)
+    ffi (1.11.3)
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
     multi_json (1.13.1)
-    multipart-post (2.1.0)
+    multipart-post (2.1.1)
     mustermann (1.0.3)
     nio4r (2.3.1)
     puma (4.0.0)
@@ -35,9 +36,9 @@ GEM
     rack (2.0.7)
     rack-protection (2.0.5)
       rack
-    rake (12.3.2)
+    rake (13.0.1)
     rb-readline (0.5.5)
-    scrypt (3.0.6)
+    scrypt (3.0.7)
       ffi-compiler (>= 1.0, < 2.0)
     sinatra (2.0.5)
       mustermann (~> 1.0)

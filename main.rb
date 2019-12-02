@@ -15,7 +15,6 @@ require 'securerandom'
 require 'pp'
 require_relative 'firestarter'
 
-$config = YAML.load_file('config.yml')["development"]["xgt"]
 
 set :bind, '0.0.0.0'
 
@@ -35,25 +34,28 @@ not_found do
 end
 =end
 
+require 'logger'
 
-get '/account/:name' do
-  @firestarter = Firestarter.new($config)
-  JSON.dump({ accounts: @firestarter.account(params[:name]) })
+configure :development do
+  set :logging, Logger::DEBUG
 end
 
-get '/account/:name/exist' do
-  @firestarter = Firestarter.new($config)
-  JSON.dump({ account_exist?: @firestarter.account_exist?(params[:name]) })
+
+get '/account/:address' do
+  @firestarter = Firestarter.new()
+  JSON.dump({ accounts: @firestarter.account(params[:address]) })
+end
+
+get '/account/:address/exist' do
+  @firestarter = Firestarter.new()
+  JSON.dump({ account_exist?: @firestarter.account_exist?(params[:address]) })
 end
  
 post '/account' do
-  # name = params[:name]
   json_body = JSON.load(request.body.read)
   keys = json_body["keys"]
-  # name = "xgt" + SecureRandom.uuid
-  name = "xgt" + SecureRandom.uuid.gsub('-', '').to_i(16).to_s(36)
-  @firestarter = Firestarter.new($config)
-  res = @firestarter.create_account(name, keys)
+  @firestarter = Firestarter.new()
+  res = @firestarter.create_account(keys)
   if res["error"]
     status 500
     message = res["error"]["message"]
