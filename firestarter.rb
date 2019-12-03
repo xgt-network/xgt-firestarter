@@ -68,6 +68,7 @@ class Firestarter
     account_names = rpc.call('condenser_api.get_account_names_by_block_num', [transaction_data['block_num']])
     account_name = account_names.first
 
+=begin
     # [OPTIONAL] Set up a delegation for the new account
     amount = "5000"
     vesting_shares = "#{'%.6f' % amount.to_i}"
@@ -85,6 +86,7 @@ class Firestarter
     }
     signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [ENV["WIF"]], ENV["CHAIN_ID"])
     account_create_chain_response = rpc.call('call', ['condenser_api', 'broadcast_transaction_synchronous', [signed]])
+=end
 
     # Return the response
     { 
