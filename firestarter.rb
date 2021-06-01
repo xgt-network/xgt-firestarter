@@ -5,93 +5,64 @@ require 'xgt/ruby'
 
 class Firestarter
 
-  attr_accessor :wif, :chain_id, :rpc
+  attr_accessor :wif, :chain_id, :rpc, :current_name
 
   def initialize()
-    @rpc = Xgt::Ruby::Rpc.new(ENV["HOST"])
+    @rpc = Xgt::Ruby::Rpc.new(ENV["XGT_HOST"])
+    @chain_id = ENV['XGT_CHAIN_ID'] \
+      || "4e08b752aff5f66e1339cb8c0a8bca14c4ebb238655875db7dade86349091197"
+    @current_name = ENV['XGT_NAME'] || 'XGT0000000000000000000000000000000000000000'
+    @wifs = ENV['XGT_WIFS'] \
+      &.split(';') \
+      &.map { |pair| pair.split(':') } \
+      &.map { |pair| [pair[0], pair[1].split(',')] } \
+      &.to_h \
+      || default_wifs
+
   end
 
-  def account_exist?(address)
-    account(address).any?
+  def current_wifs
+    @wifs[current_name] || []
   end
 
-  def account(address)
-    res = rpc.call('database_api.find_accounts', { 'accounts' => [address] })
-    res["accounts"]
-  end
-
-  def create_account(keys)
-
-    # Create account
-    now = (Time.now + 360).utc.iso8601.gsub(/Z$/, '')
-
+  def create_wallet(keys)
     txn = {
-      'expiration' => now,
-      'extensions' => [],
-      'operations' => [
-        [
-          'account_create',
-          {
-            'fee' => '0.000 TESTS',
-            'creator' => 'initminer',
-            'owner' => {
-              'weight_threshold' => 1,
-              'account_auths' => [],
-              'key_auths' => [ [ keys["owner"], 1 ] ],
-            },
-            'active' => {
-              'weight_threshold' => 1,
-              'account_auths' => [],
-              'key_auths' => [ [ keys["active"], 1 ] ],
-            },
-            'posting' => {
-              'weight_threshold' => 1,
-              'account_auths' => [],
-              'key_auths' => [ [ keys["posting"], 1 ] ],
-            },
-            'memo_key' => keys["memo"],
-            'json_metadata' => '',
-            'extensions' => []
-          }
-        ]
-      ],
-      'ref_block_num' => 34960,
-      'ref_block_prefix' => 883395518
+      'operations' => [{
+        'type' => 'wallet_create_operation',
+        'value' => {
+          'fee' => {
+            'amount' => '0',
+            'precision' => precision,
+            'nai' => '@@000000021'
+          },
+          # 'creator' => keys['wallet_name'],
+          'creator' => keys['wallet_name'],
+          'recovery' => {
+            'weight_threshold' => 1,
+            'account_auths' => [],
+            'key_auths' => [[keys['recovery_public'], 1]]
+          },
+          'money' => {
+            'weight_threshold' => 1,
+            'account_auths' => [],
+            'key_auths' => [[keys['money_public'], 1]]
+          },
+          'social' => {
+            'weight_threshold' => 1,
+            'account_auths' => [],
+            'key_auths' => [[keys['social_public'], 1]]
+          },
+          'memo_key' => keys['memo_public'],
+          'json_metadata' => '',
+        }
+      }]
     }
 
-    signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [ENV["WIF"]], ENV["CHAIN_ID"])
-    account_create_chain_response = rpc.call('call', ['condenser_api', 'broadcast_transaction_synchronous', [signed]])
+    id = rpc.broadcast_transaction(txn, current_wifs, chain_id)
 
-
-    # Get wallet address we just created
-    transaction_data = rpc.call('condenser_api.get_transaction', [account_create_chain_response['id']])
-    account_names = rpc.call('condenser_api.get_account_names_by_block_num', [transaction_data['block_num']])
-    account_name = account_names.first
-
-=begin
-    # [OPTIONAL] Set up a delegation for the new account
-    amount = "5000"
-    vesting_shares = "#{'%.6f' % amount.to_i}"
-
-    txn = {
-      'extensions' => [],
-      'operations' => [[
-        'delegate_vesting_shares',
-      {
-        'delegator' => "initminer",
-        'delegatee' => account_name,
-        'vesting_shares' => "#{vesting_shares} VESTS"
-      }
-      ]]
-    }
-    signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [ENV["WIF"]], ENV["CHAIN_ID"])
-    account_create_chain_response = rpc.call('call', ['condenser_api', 'broadcast_transaction_synchronous', [signed]])
-=end
-
-    # Return the response
     { 
-      name: account_name,
-      result: account_create_chain_response
+      'keys' => keys, 
+      'id' => id 
     }
   end
 end

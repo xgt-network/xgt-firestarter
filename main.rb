@@ -15,7 +15,6 @@ require 'securerandom'
 require 'pp'
 require_relative 'firestarter'
 
-
 set :bind, '0.0.0.0'
 
 configure { set :server, :puma }
@@ -41,21 +40,11 @@ configure :development do
 end
 
 
-get '/account/:address' do
-  @firestarter = Firestarter.new()
-  JSON.dump({ accounts: @firestarter.account(params[:address]) })
-end
-
-get '/account/:address/exist' do
-  @firestarter = Firestarter.new()
-  JSON.dump({ account_exist?: @firestarter.account_exist?(params[:address]) })
-end
- 
-post '/account' do
+post '/wallet' do
   json_body = JSON.load(request.body.read)
   keys = json_body["keys"]
   @firestarter = Firestarter.new()
-  res = @firestarter.create_account(keys)
+  res = @firestarter.create_wallet(keys)
   if res["error"]
     status 500
     message = res["error"]["message"]
