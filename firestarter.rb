@@ -32,7 +32,7 @@ class Firestarter
         'value' => {
           'fee' => {
             'amount' => '0',
-            'precision' => precision,
+            'precision' => 8,
             'nai' => '@@000000021'
           },
           # 'creator' => keys['wallet_name'],
