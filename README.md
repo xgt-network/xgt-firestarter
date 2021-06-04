@@ -1,5 +1,5 @@
 # xgt-firestarter
-A tool :for provisioning XGT wallets
+A tool for provisioning XGT wallets
 
 ## Configuration
 The following configuration fields are suggested to be set as environment 
