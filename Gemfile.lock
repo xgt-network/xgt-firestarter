@@ -1,9 +1,8 @@
 GIT
   remote: https://github.com/xgt-network/xgt-ruby.git
-  revision: 6a7126494a40a047f269be3d04b353bd6b80354b
-  branch: wallet
+  revision: c8c2af5359feb342a8c0e1333ce3ac135f8a6198
   specs:
-    xgt-ruby (0.1.3)
+    xgt-ruby (0.1.1)
       base58 (~> 0.2.3)
       bitcoin-ruby (~> 0.0.19)
       faraday (~> 0.15.4)
@@ -65,7 +64,7 @@ DEPENDENCIES
   xgt-ruby!
 
 RUBY VERSION
-   ruby 2.7.2p137
+   ruby 2.7.3p183
 
 BUNDLED WITH
    2.1.4
