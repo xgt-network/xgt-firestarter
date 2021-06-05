@@ -1,4 +1,3 @@
-
 require 'bundler/setup'
 require 'time'
 require 'xgt/ruby'
@@ -12,57 +11,85 @@ class Firestarter
     @chain_id = ENV['XGT_CHAIN_ID'] \
       || "4e08b752aff5f66e1339cb8c0a8bca14c4ebb238655875db7dade86349091197"
     @current_name = ENV['XGT_NAME'] || 'XGT0000000000000000000000000000000000000000'
-    @wifs = ENV['XGT_WIFS'] \
-      &.split(';') \
-      &.map { |pair| pair.split(':') } \
-      &.map { |pair| [pair[0], pair[1].split(',')] } \
-      &.to_h \
-      || default_wifs
-
-  end
-
-  def current_wifs
-    @wifs[current_name] || []
+    @wif = ENV['WIF']
   end
 
   def create_wallet(keys)
+
     txn = {
+      'extensions' => [],
+      'operations' => [
+        {
+          'type' => 'wallet_create_operation',
+          'value' => {
+            'fee' => {
+              'amount' => '0',
+              'precision' =>  8,
+              'nai' => '@@000000021'
+            },
+            'creator' => current_name,
+            'recovery' => {
+              'weight_threshold' => 1,
+              'account_auths' => [],
+              'key_auths' => [[keys['recovery_public'], 1]]
+            },
+            'money' => {
+              'weight_threshold' => 1,
+              'account_auths' => [],
+              'key_auths' => [[keys['money_public'], 1]]
+            },
+            'social' => {
+              'weight_threshold' => 1,
+              'account_auths' => [],
+              'key_auths' => [[keys['social_public'], 1]]
+            },
+            'memo_key' => keys['memo_public'],
+            'json_metadata' => '',
+            'extensions' => []
+          }
+        }
+      ]
+    }
+
+    signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [wif], chain_id)
+    rpc.call('transaction_api.broadcast_transaction', [signed])
+  end
+end
+__END__
+
+    id = rpc.broadcast_transaction(create_txn, [wif], chain_id)
+
+
+    update_txn = {
+      'extensions' => [],
       'operations' => [{
-        'type' => 'wallet_create_operation',
+        'type' => 'witness_update_operation',
         'value' => {
-          'fee' => {
-            'amount' => '0',
-            'precision' => 8,
-            'nai' => '@@000000021'
+          'owner' => wallet_name,
+          'url' => 'http://witness-category/my-witness',
+          # 'block_signing_key' => keys.call['recovery_public'],
+          'block_signing_key' => keys.call['witness_public'],
+          'props' => {
+            # 'account_creation_fee' => fee,
+            # 'account_creation_fee' => '1 XGT',
+            'account_creation_fee' => {'amount'=>'0','precision'=>8,'nai'=>'@@000000021'}
           },
-          # 'creator' => keys['wallet_name'],
-          'creator' => keys['wallet_name'],
-          'recovery' => {
-            'weight_threshold' => 1,
-            'account_auths' => [],
-            'key_auths' => [[keys['recovery_public'], 1]]
-          },
-          'money' => {
-            'weight_threshold' => 1,
-            'account_auths' => [],
-            'key_auths' => [[keys['money_public'], 1]]
-          },
-          'social' => {
-            'weight_threshold' => 1,
-            'account_auths' => [],
-            'key_auths' => [[keys['social_public'], 1]]
-          },
-          'memo_key' => keys['memo_public'],
-          'json_metadata' => '',
+          # 'fee' => final_fee,
+          # 'fee' => '1 XGT',
+          'fee' => {'amount'=>'0','precision'=>8,'nai'=>'@@000000021'}
         }
       }]
     }
 
-    id = rpc.broadcast_transaction(txn, current_wifs, chain_id)
+    signing_keys = keys.call['recovery_private']
+    signed = Xgt::Ruby::Auth.sign_transaction(rpc, update_txn, [signing_keys], chain_id)
+    response = rpc.call('transaction_api.broadcast_transaction', [signed])
+
 
     { 
       'keys' => keys, 
-      'id' => id 
+      'create_tx_res' => id,
+      'update_tx_res' => response,
     }
   end
 end
