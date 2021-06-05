@@ -61,10 +61,10 @@ class Firestarter
       'operations' => [{
         'type' => 'witness_update_operation',
         'value' => {
-          'owner' => wallet_name,
+          'owner' => keys['wallet_name'],
           'url' => 'http://witness-category/my-witness',
-          # 'block_signing_key' => keys.call['recovery_public'],
-          'block_signing_key' => keys.call['witness_public'],
+          'block_signing_key' => keys.call['recovery_public'],
+          # 'block_signing_key' => keys.call['witness_public'],
           'props' => {
             'account_creation_fee' => {'amount'=>'0','precision'=>8,'nai'=>'@@000000021'}
           },
