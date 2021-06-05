@@ -53,13 +53,9 @@ class Firestarter
 
     signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [wif], chain_id)
     rpc.call('transaction_api.broadcast_transaction', [signed])
-  end
-end
-__END__
-
-    id = rpc.broadcast_transaction(create_txn, [wif], chain_id)
 
 
+    # Add entries to enable mining on this wallet address
     update_txn = {
       'extensions' => [],
       'operations' => [{
@@ -70,12 +66,8 @@ __END__
           # 'block_signing_key' => keys.call['recovery_public'],
           'block_signing_key' => keys.call['witness_public'],
           'props' => {
-            # 'account_creation_fee' => fee,
-            # 'account_creation_fee' => '1 XGT',
             'account_creation_fee' => {'amount'=>'0','precision'=>8,'nai'=>'@@000000021'}
           },
-          # 'fee' => final_fee,
-          # 'fee' => '1 XGT',
           'fee' => {'amount'=>'0','precision'=>8,'nai'=>'@@000000021'}
         }
       }]
