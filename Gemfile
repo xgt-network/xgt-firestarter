@@ -7,5 +7,5 @@ gem 'rb-readline'
 gem 'sinatra'
 gem 'sinatra-contrib'
 gem 'puma'
-gem 'xgt-ruby', git: "https://github.com/xgt-network/xgt-ruby.git"
+gem 'xgt-ruby'
 
