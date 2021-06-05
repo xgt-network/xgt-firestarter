@@ -52,7 +52,9 @@ class Firestarter
     }
 
     signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [wif], chain_id)
-    rpc.call('transaction_api.broadcast_transaction', [signed])
+    response rpc.call('transaction_api.broadcast_transaction', [signed])
+
+    return response
 
 
     # Add entries to enable mining on this wallet address
