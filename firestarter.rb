@@ -2,6 +2,8 @@ require 'bundler/setup'
 require 'time'
 require 'xgt/ruby'
 
+require 'logger'
+
 class Firestarter
 
   attr_accessor :wif, :chain_id, :rpc, :current_name
@@ -52,6 +54,11 @@ class Firestarter
     }
 
     signed = Xgt::Ruby::Auth.sign_transaction(rpc, txn, [wif], chain_id)
+
+    logger = Logger.new(STDOUT)
+    logger.level = Logger::DEBUG
+    logger.debug(signed)
+
     create_response = rpc.call('transaction_api.broadcast_transaction', [signed])
     return { 
       'keys' => keys, 
